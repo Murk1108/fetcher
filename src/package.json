@@ -1,0 +1,17 @@
+{
+  "name": "fetcher",
+  "description": "A downloader, updater and launcher for games and other applications",
+  "version": "0.0.1",
+  "author": "Markus Wagner <murk@ferrum-et-magica.de>",
+  "license": "MIT",
+  "main": "index.html",
+  "window": {
+    "frame": false,
+    "toolbar": false,
+    "height": 110,
+    "width": 400
+  },
+  "dependencies": {},
+  "chromium-args": "--data-path='cache'",
+  "single-instance": true
+}

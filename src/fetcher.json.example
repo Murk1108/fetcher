@@ -1,0 +1,12 @@
+{
+	"ui": {
+		"resizable": false
+	},
+	"app": {
+		"executable": "myapp.exe"
+	},
+	"httpupdater": {
+		"baseurl": "http://download.example.com/"
+	}
+}
+

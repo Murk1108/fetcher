@@ -1,0 +1,14 @@
+{
+  "name": "fetcher-build",
+  "description": "Builds and packages fetcher",
+  "version": "0.0.1",
+  "repository": {
+    "type" : "git",
+    "url" : "http://github.com/Murk1108/fetcher.git"
+  },
+  "dependencies": {
+    "node-webkit-builder": "~1.0.8"
+  },
+  "author": "Markus Wagner <murk@ferrum-et-magica.de>",
+  "license": "MIT"
+}

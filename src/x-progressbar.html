@@ -1,0 +1,84 @@
+<template id="progressbartemplate">
+<style>
+:host {
+	background-color: #222222;
+	border-radius: 2px;
+	box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+	height: 18px;
+	position: relative;
+	width: 100%;
+	font-size: .9em;
+	display: inline-block;
+}
+
+div {
+	border-radius: 2px;
+	box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+	color: black;
+	height: 100%;
+	width: 0%;
+	background:
+		-webkit-linear-gradient(45deg, transparent, transparent 33%, rgba(0, 0, 0, 0.1) 33%, rgba(0, 0, 0, 0.1) 66%, transparent 66%),
+		-webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.2)),
+		-webkit-linear-gradient(left, #205BC9, #c4672d);
+	background: 
+		-moz-linear-gradient(45deg, transparent, transparent 33%, rgba(0, 0, 0, 0.1) 33%, rgba(0, 0, 0, 0.1) 66%, transparent 66%),
+		-moz-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.2)),
+		-moz-linear-gradient(left, #205BC9, #c4672d);
+	background-size: 33px 20px, 100% 100%, 100% 100%;
+	-webkit-animation: move 5s linear 0 infinite;
+	-moz-animation: move 5s  infinite linear;
+}
+
+@-webkit-keyframes move {
+	0% {background-position: 0px 0px, 0 0, 0 0}
+	100% {background-position: -100px 0px, 0 0, 0 0}
+}
+
+@-moz-keyframes move {
+	0% {background-position: 0px 0px, 0 0, 0 0}
+	100% {background-position: -100px 0px, 0 0, 0 0}
+}
+
+span {
+	color: white;
+	line-height: 20px;
+	margin-left: 5px;
+	position: absolute;
+	word-wrap: nowrap;
+}
+</style>
+<div>
+	<span></span>
+</div>
+</template>
+
+<script>
+var importDoc = document.currentScript.ownerDocument;
+var XProgressbarPrototype = Object.create(HTMLElement.prototype, {
+	createdCallback: {
+		value: function() {
+			this.root = this.createShadowRoot();
+			var template = importDoc.querySelector('#progressbartemplate');
+			var clone = document.importNode(template.content, true);
+			this.root.appendChild(clone);
+		}
+	},
+
+	progress: {
+		value: function(value) {
+			this.root.querySelector('div').style.width = value + "%";
+		}
+	},
+
+	text: {
+		value: function(text) {
+			this.root.querySelector('span').textContent = text;
+		}
+	}
+});
+
+var XProgressbar = document.registerElement('x-progressbar', {
+	prototype: XProgressbarPrototype
+});
+</script>

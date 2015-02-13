@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fetcher</title>
+    <script type="text/javascript" src="helper.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+
+    <link rel="stylesheet" href="main.css">
+    <link rel="import" href="x-progressbar.html">
+  </head>
+  <body>
+    <div class="titlebar">
+	<span class="title">&#8675; Fetcher</span>
+	<ul class="menu" style="float: right;">
+	    <li><a href="#">&#9881;</a>
+	    	<ul>
+	    		<li><a href="#" id="settings">Force verification</a></li>
+	    		<li><a href="#">Run after update is complete</a></li>
+	    	</ul>
+	    </li>
+	    <li><a href="#" id="exit">&#10005;</a></li>
+	</ul>
+    </div>
+	<div class="clear"></div>
+	<div style="padding: 40px 0 0;">
+		<div class="row">
+			<div class="grid_10">
+				<x-progressbar></x-progressbar>	
+			</div>
+		</div>
+		<div class="clear"></div>
+		<div class="row">
+			<div class="grid_7">
+				<div id="statusbar" style="margin-top: 6px; line-height: 1.8em;">&nbsp;</div>
+			</div>
+			<div class="grid_3">
+				<button id="btn" type="button" style="width: 100%">&#9654; Update</button>
+			</div>
+		</div>
+	</div>
+  </body>
+</html>

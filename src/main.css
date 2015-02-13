@@ -1,0 +1,201 @@
+body {
+	padding: 0;
+	margin: 0;
+	background: #555;
+	color: white;
+	font-family: Arial;
+	font-size: .8em;
+	width: 400px;
+}
+
+a {
+	color: #dddddd;
+}
+
+a:hover {
+	color: #45ECC0;
+}
+
+.title {
+	-webkit-user-select: none;
+}
+
+.titlebar {
+	color: white;
+	background-color: #205BC9;
+	left: 0;
+	padding: 5px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	-webkit-app-region: drag;
+	font-size: 1.2em;
+}
+
+.titlebar a {
+	-webkit-app-region: no-drag;
+}
+
+.statusbar {
+	background-color: #205BC9;
+	bottom: 0;
+	font-family: monospace;
+	height: 20;
+	left: 0;
+	padding: 2px;
+	position: absolute;
+	right: 0;
+	white-space: nowrap;
+}
+
+button {
+	background-color: #205BC9;
+	border: none;
+	border-radius: 4px;
+	color: #fff;
+	font-weight: normal;
+	line-height: 1.8em;
+	cursor: pointer;
+	box-shadow: 2px 2px 0 0 rgba(0,0,0,0.1);
+	margin: 4px 0;
+}
+
+button:hover
+{
+	color: #45ECC0;
+}
+
+button:active
+{
+	border: none;
+}
+
+.row {
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0;
+}
+
+.grid_3,
+.grid_7,
+.grid_10 {
+	display: inline;
+	float: left;
+	margin-left: 10px;
+	margin-right: 10px;
+	padding: 0;
+}
+
+.grid_3 {
+	width: 100px;
+}
+
+.grid_7 {
+	width: 260px;
+}
+
+.grid_10 {
+	width: 380px;
+}
+
+.clear {
+	clear: both;
+	display: block;
+	width: 0;
+	height: 0;
+}
+
+.menu,
+.menu ul,
+.menu li,
+.menu a
+{
+	margin: 0;
+	padding: 0;
+	border: none;
+	outline: none;
+}
+
+.menu
+{
+	height: 15px;
+	width: 50px;
+}
+
+.menu li
+{
+	position: relative;
+	list-style: none;
+	float: left;
+	display: block;
+	height: 15px;
+}
+
+.menu li a
+{
+	display: block;
+	padding: 0 4px;
+	margin: 2px 0;
+	line-height: 15px;
+	text-decoration: none;
+}
+
+.menu ul
+{
+	position: absolute;
+	top: 25px;
+	right: 0;
+
+	opacity: 0;
+	background: #ddd;
+
+	border-radius: 5px 5px 5px 5px;
+	-webkit-transition: opacity .25s ease .1s;
+	-moz-transition: opacity .25s ease .1s;
+	transition: opacity .25s ease .1s;
+	border: 1px solid rgba(0, 0, 0, .6);
+	box-shadow: 0 0 2px 2px rgba(0, 0, 0, .1);
+
+	padding: 2px 0;
+	z-index: 100;
+
+	font-size: .8em;
+}
+
+.menu li:hover > ul
+{
+	opacity: 1;
+}
+
+.menu ul li
+{
+	height: 0;
+	overflow: hidden;
+	padding: 0;
+
+	-webkit-transition: height .25s ease .1s;
+	-moz-transition: height .25s ease .1s;
+	transition: height .25s ease .1s;
+}
+
+.menu li:hover > ul li
+{
+	height: 24px;
+	overflow: visible;
+	padding: 0;
+}
+
+.menu ul li a
+{
+	color: black;
+	width: 180px;
+	padding: 4px 0 4px 40px;
+	margin: 0;
+	border: none;
+}
+
+.menu ul li a:hover
+{
+	color: white;
+	background-color: #205BC9;
+}
