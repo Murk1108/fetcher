@@ -6,13 +6,14 @@ var path = require('path');
 var spawn = require('child_process').spawn;
 var url = require('url');
 
-var file_list = [];
-var current_file = 0;
+var Fetcher = require('./fetcher.js');
+var fetcher = new Fetcher();
+
 var state = 0;
 var local_base_dir = '.';
 var launcher_updated_required = true;
 
-var config = require('./fetcher.json');
+var config = require('./package.json.json').fetcher;
 
 var local_base_dir = path.dirname(process.execPath);
 
@@ -54,7 +55,7 @@ function download_manifest(cb) {
   });
 }
 
-function verify_file(file_name, checksum, cb) {
+function verify_file(file_name, checksum) {
   var stream = fs.createReadStream(path.join(local_base_dir, file_name));
   var verified = 0;
   var size = 1;
@@ -68,54 +69,64 @@ function verify_file(file_name, checksum, cb) {
   stream.on('data', function(data) {
     hash.update(data);
     verified += data.length;
-    set_progress(verified, size);
+		fetcher.emit('verify-progress', verified, size);
   });
 
   stream.on('end', function() {
     if(hash.digest('hex') == checksum) {
+		fetcher.emit('verify-success');
       console.log('Checksum ok for file ' + file_name);
-      cb(true);
     } else {
+		fetcher.emit('verify-failed', file_name);
       console.log('Checksum WRONG for file ' + file_name);
-      cb(false);
     }
   });
 
   stream.on('error', function(err) {
     console.log('File not found');
-    cb(false);
+		fetcher.emit('verify-failed', file_name);
   });
 }
 
-function fetch_file(cb) {
-	if( current_file < file_list.length) {
-		var file_info = file_list[current_file];
-		set_progress_text('Verifying file ' + (current_file + 1) + ' of ' + file_list.length);
-    		verify_file(file_info[0], file_info[1], function(result) {
-			if (!result) {
-				download_file(file_info[0], function () {
-					current_file++;
-					fetch_file(cb);	
-				});
-			} else {
-				current_file++;
-				fetch_file(cb);
-			}
-		});
+fetcher.on('verify-started', function() {
+	set_progress_text('Verifying file ' + (fetcher.current_file + 1) + ' of ' + fetcher.files.length);
+});
+
+fetcher.on('verify-progress', function(verified, size) {
+	set_progress(verified, size);
+});
+
+fetcher.on('verify-failed', download_file);
+
+fetcher.on('verify-success', fetch_next_file);
+
+fetcher.on('download-started', function(file_name) {
+	console.log("downloading: " + file_name);
+});
+
+fetcher.on('download-progress', function(downloaded, total, speed) {
+	set_progress(downloaded, total);
+	set_progress_text('Downloading file ' + (fetcher.current_file + 1) + ' of ' + fetcher.files.length + ', ' + (downloaded / (1024 * 1024)).toFixed(1) + ' MB of ' + (total / (1024 * 1024)).toFixed(1) + ' MB @ ' + (speed / 1024) .toFixed(0) + ' kB/sec');
+});
+
+fetcher.on('download-complete', fetch_next_file);
+
+function fetch_next_file() {
+	fetcher.fetch_file();
+	if( fetcher.current_file < fetcher.files.length) {
+		var file_info = fetcher.files[fetcher.current_file++];
+		fetcher.verify_file();
+    		verify_file(file_info[0], file_info[1]);
 	} else {
-		console.log('fetch files completed');
-		localStorage.updateRequired = false;
-		if ( cb !== undefined) {
-			cb();
-		}
+		fetcher.emit('update-complete');
 	}
 }
 
-function download_file(file_name, cb) {
-	console.log("downloading: " + file_name);
+function download_file(file_name) {
 	makedirs(path.dirname(path.join(local_base_dir, file_name)));
 	var request = http.get(config.httpupdater.baseurl + file_name, function(response) {
 		if (response.statusCode == 200)	{
+			fetcher.emit('download-started', file_name);
 			var downloaded = 0;
 			var speed = 0;
 			var start_time = new Date().getTime();
@@ -126,15 +137,12 @@ function download_file(file_name, cb) {
 				total = response.headers['content-length'];
 				duration = (new Date().getTime() - start_time) / 1000;
 				speed = downloaded / duration;
-				set_progress(downloaded, total);
-				set_progress_text('Downloading file ' + (current_file + 1) + ' of ' + file_list.length + ', ' + (downloaded / (1024 * 1024)).toFixed(1) + ' MB of ' + (total / (1024 * 1024)).toFixed(1) + ' MB @ ' + (speed / 1024) .toFixed(0) + ' kB/sec');
+				fetcher.emit('download-progress', downloaded, total, speed);
 			});
 
 			response.on('end', function() {
 				file.end(function() {
-					if (cb !== undefined) {
-						cb();
-					}
+					fetcher.emit('download-complete');
 				});
 			});
 
@@ -154,7 +162,6 @@ function check_launcher(cb) {
 		} catch (e) {
 			;
 		}
-		console.log(conf);
 		if (conf.etag == response.headers['etag']) {
 			cb(false);
 		} else {
@@ -207,22 +214,27 @@ function exit() {
   gui.App.quit();
 }
 
+fetcher.on('update-complete', function() {
+	console.log('fetch files completed');
+	localStorage.updateRequired = false;
+	set_status('Update complete - ready to launch.');
+	document.getElementById('btn').innerHTML = 'Run';
+	state = 3;
+	if (true) { //document.getElementById('autostart').checked) {
+		run();
+	} 
+});
+
 function run() {
 	if (launcher_updated_required) {
 		return;
 	}
 	if (state == 1) {
-		current_file = 0;
+		fetcher.current_file = 0;
 		state = 2;
 		set_status('Update in progress')
-		fetch_file(function() {
-			set_status('Update complete - ready to launch.');
-			document.getElementById('btn').innerHTML = 'Run';
-			state = 3;
-			if (true) { //document.getElementById('autostart').checked) {
-				run();
-			} 
-		});
+		fetcher.update_payload();
+		fetch_next_file();
 	}
 	if (state == 3) {
 		set_status('Launching application...');
@@ -266,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 				launcher_updated_required = false;
 				console.log('Update available, but disabled via argument');
 				download_manifest(function(data, changed) {
-					file_list = data.files;
+					fetcher.files = data.files;
 					if (changed || localStorage.updateRequired == "true") {
 						state = 1;
 					} else {
@@ -281,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 		} else {
 			launcher_updated_required = false;
 			download_manifest(function(data, changed) {
-				file_list = data.files;
+				fetcher.files = data.files;
 				if (changed || localStorage.updateRequired == "true") {
 					state = 1;
 				} else {

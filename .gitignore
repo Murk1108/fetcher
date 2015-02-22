@@ -3,3 +3,4 @@ build
 tmp
 cache
 src/fetcher.json
+*.swp
