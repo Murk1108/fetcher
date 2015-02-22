@@ -7,7 +7,9 @@
     "url" : "http://github.com/Murk1108/fetcher.git"
   },
   "dependencies": {
-    "node-webkit-builder": "~1.0.8"
+    "node-webkit-builder": "~1.0.8",
+    "gulp": "~3.8.11",
+    "gulp-util": "~3.0.3"
   },
   "author": "Markus Wagner <murk@ferrum-et-magica.de>",
   "license": "MIT"
