@@ -245,7 +245,6 @@ function run() {
 
 document.addEventListener('DOMContentLoaded', function(event) {
 	var win = gui.Window.get();
-	win.setResizable(config.ui.resizable);
 	
 	if (localStorage.autostart === undefined) {
 		localStorage.autostart = false;
