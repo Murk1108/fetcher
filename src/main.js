@@ -238,7 +238,7 @@ function run() {
 	}
 	if (state == 3) {
 		set_status('Launching application...');
-		spawn(path.join(local_base_dir, config.app.executable), {detached: true});
+		spawn(path.join(local_base_dir, config.payload.executable), {detached: true});
 		exit();
 	}
 }
