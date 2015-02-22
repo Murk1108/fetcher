@@ -13,7 +13,7 @@ var state = 0;
 var local_base_dir = '.';
 var launcher_updated_required = true;
 
-var config = require('./package.json.json').fetcher;
+var config = require('./package.json').fetcher;
 
 var local_base_dir = path.dirname(process.execPath);
 
