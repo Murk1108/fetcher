@@ -4,6 +4,7 @@ var util = require('util')
   , http = require('http')
   , path = require('path')
   , spawn = require('child_process').spawn
+  , url = require('url')
   , EventEmitter = require('events').EventEmitter;
 
 var Fetcher = function(config) {
@@ -51,7 +52,7 @@ Fetcher.prototype.check_launcher = function() {
 	request.end();
 }
 
-Fetcher.prototype.download_launcher() {
+Fetcher.prototype.download_launcher = function() {
   var self = this;
 	var file_name = "package.nw";
 	window.makedirs(path.dirname(path.join(self.config.local_base_dir, file_name)));
