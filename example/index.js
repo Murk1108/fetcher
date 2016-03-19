@@ -1,17 +1,28 @@
-var gui = require('nw.gui');
+const remote = require('electron').remote;
+const Fetcher = require('./fetcher.js');
+const config = require('./package.json').fetcher;
+
 var fs = require('fs');
-var path = require('path');
 var spawn = require('child_process').spawn;
+var path = require('path');
 
-var Fetcher = require('./fetcher.js');
-
-var config = require('./package.json').fetcher;
-config.local_base_dir = '.';
-config.local_base_dir = path.dirname(process.execPath);
 var fetcher = new Fetcher(config);
 
-function exit() {
-  gui.App.quit();
+var closeEl = document.querySelector('.close');
+closeEl.addEventListener('click', function () {
+  remote.app.quit();
+});
+
+function format_bytes (bytes) {
+  if (bytes < 1024) {
+      return bytes + ' B';
+  }
+
+  if (bytes < (1024 * 1024)) {
+      return ((bytes / 1024).toFixed(0)) + ' kB';
+  }
+
+  return ((bytes / (1024 * 1024)).toFixed(1)) + ' MB';
 }
 
 function set_status(text) {
@@ -28,7 +39,7 @@ function set_progress_text(text) {
 
 fetcher.on('verify-started', function(a, b) {
 	set_status('Updating...');
-	set_progress_text('Verifying file ' + a + ' of ' + b);
+	set_progress_text('Verifying file ' + (a - 1) + ' of ' + b);
 });
 
 fetcher.on('verify-progress', set_progress);
@@ -43,7 +54,7 @@ fetcher.on('download-started', function(file_name) {
 
 fetcher.on('download-progress', function(downloaded, total, speed) {
 	set_progress(downloaded, total);
-	set_progress_text('Downloading file ' + (fetcher.current_file + 1) + ' of ' + fetcher.files.length + ', ' + (downloaded / (1024 * 1024)).toFixed(1) + ' MB of ' + (total / (1024 * 1024)).toFixed(1) + ' MB @ ' + (speed / 1024) .toFixed(0) + ' kB/sec');
+	set_progress_text('Downloading file ' + (fetcher.current_file) + ' of ' + fetcher.files.length + ', ' + format_bytes(downloaded) + ' of ' + format_bytes(total) + ' @ ' + format_bytes(speed) + '/sec');
 });
 
 fetcher.on('download-complete', fetcher.fetch_next_file);
@@ -58,7 +69,7 @@ fetcher.on('selfupdate-status', function(updateAvailable) {
 
 fetcher.on('selfupdate-progress', function(downloaded, total, speed) {
 	set_progress(downloaded, total);
-	set_progress_text('Downloading new launcher ' + (downloaded / (1024 * 1024)).toFixed(1) + ' MB of ' + (total / (1024 * 1024)).toFixed(1) + ' MB @ ' + (speed / 1024) .toFixed(0) + ' kB/sec');
+	set_progress_text('Downloading new launcher ' + format_bytes(downloaded) + ' of ' + format_bytes(total) + ' @ ' + (speed / 1024) .toFixed(0) + ' kB/sec');
 });
 
 fetcher.on('selfupdate-complete', function() {
@@ -74,45 +85,20 @@ fetcher.on('update-complete', function() {
 	console.log('fetch files completed');
 	localStorage.updateRequired = false;
 	set_status('Update complete - ready to launch.');
-	if (false) { //document.getElementById('autostart').checked) {
-		run();
-	}
+  document.getElementById('btn').disabled = false;
 });
 
 function run() {
 	if (fetcher.payload_ready) {
 		set_status('Launching application...');
 		fetcher.run_payload();
-		exit();
+		remote.app.quit();
 	}
 }
+document.querySelector('#btn').addEventListener('click', run);
 
-document.addEventListener('DOMContentLoaded', function(event) {
-	var win = gui.Window.get();
+config.local_base_dir = process.env.FETCHER_PAYLOAD_DIR || path.dirname(remote.app.getPath('exe'));
+//remote.getGlobal('console').log(config.local_base_dir);
 
-	if (localStorage.autostart === undefined) {
-		localStorage.autostart = false;
-	}
-
-	/*
-	$('#autostart').change(function() {
-		localStorage.autostart = $(this).is(":checked");
-	});
-
-	$('#autostart').prop('checked', localStorage.autostart === "true");
-	*/
-
-	document.querySelector('#btn').addEventListener('click', run);
-	document.querySelector('#exit').addEventListener('click', exit);
-	document.querySelector('#settings').addEventListener('click', function() {
-		return false;
-	});
-
-	if (gui.App.argv.length == 0) {
-		set_status('Checking launcher version');
-		fetcher.self_update();
-	} else {
-		set_status('Update in progress')
-		fetcher.update_payload();
-	}
-});
+set_status('Update in progress');
+fetcher.update_payload();

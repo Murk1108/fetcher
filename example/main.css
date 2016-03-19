@@ -1,15 +1,14 @@
 body {
 	padding: 0;
 	margin: 0;
-	background: #555;
-	color: white;
+	background: #fff;
+	color: black;
 	font-family: Arial;
 	font-size: .8em;
-	width: 400px;
 }
 
 a {
-	color: #dddddd;
+	color: black;
 }
 
 a:hover {
@@ -21,8 +20,8 @@ a:hover {
 }
 
 .titlebar {
-	color: white;
-	background-color: #205BC9;
+	color: black;
+	background-color: #fff;
 	left: 0;
 	padding: 5px;
 	position: absolute;
@@ -37,7 +36,8 @@ a:hover {
 }
 
 .statusbar {
-	background-color: #205BC9;
+	color: black;
+	background-color: #fff;
 	bottom: 0;
 	font-family: monospace;
 	height: 20;
@@ -46,28 +46,6 @@ a:hover {
 	position: absolute;
 	right: 0;
 	white-space: nowrap;
-}
-
-button {
-	background-color: #205BC9;
-	border: none;
-	border-radius: 4px;
-	color: #fff;
-	font-weight: normal;
-	line-height: 1.8em;
-	cursor: pointer;
-	box-shadow: 2px 2px 0 0 rgba(0,0,0,0.1);
-	margin: 4px 0;
-}
-
-button:hover
-{
-	color: #45ECC0;
-}
-
-button:active
-{
-	border: none;
 }
 
 .row {

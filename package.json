@@ -1,16 +1,18 @@
 {
   "name": "fetcher-build",
   "description": "Builds and packages fetcher",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "repository": {
-    "type" : "git",
-    "url" : "http://github.com/Murk1108/fetcher.git"
+    "type": "git",
+    "url": "http://github.com/Murk1108/fetcher.git"
   },
   "dependencies": {
-    "node-webkit-builder": "~1.0.8",
-    "gulp": "~3.8.11",
-    "gulp-util": "~3.0.3"
+    "electron-packager": "^5.2.1",
+    "electron-prebuilt": "^0.37.2"
   },
   "author": "Markus Wagner <murk@ferrum-et-magica.de>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "electron src"
+  }
 }

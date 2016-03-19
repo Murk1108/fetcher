@@ -1,0 +1,15 @@
+{
+  "name": "fetcher",
+  "description": "A downloader, updater and launcher for games and other applications",
+  "version": "0.1.0",
+  "author": "Markus Wagner <murk@ferrum-et-magica.de>",
+  "license": "MIT",
+  "main": "main.js",
+  "dependencies": {
+  },
+  "fetcher": {
+    "httpupdater": {
+      "baseurl": "http://download.example.com/"
+    }
+  }
+}

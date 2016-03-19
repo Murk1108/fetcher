@@ -7,6 +7,16 @@ var util = require('util')
   , url = require('url')
   , EventEmitter = require('events').EventEmitter;
 
+var Payload = function(config) {
+  var self = this;
+  self.baseURL = config.baseURL;
+  self.files = [];
+  self.current_file = 0;
+  self.is_ready = false;
+}
+
+util.inherits(Payload, EventEmitter);
+
 var Fetcher = function(config) {
   var self = this;
 	EventEmitter.call(self);
@@ -92,13 +102,17 @@ Fetcher.prototype.download_launcher = function() {
 Fetcher.prototype.download_manifest = function(cb) {
   var self = this;
   var buffer = "";
-  var request = http.get(this.config.httpupdater.baseurl + "files.txt", function(response) {
+  var request = http.get(this.config.httpupdater.baseurl + "manifest.json", function(response) {
 		response.on('data', function(chunk) {
 			buffer += chunk;
 		});
 
 		response.on('end', function () {
-      self.files = (JSON.parse(buffer)).files;
+      manifest = JSON.parse(buffer);
+      self.files = manifest.files;
+      self.config.payload = {};
+      self.config.payload.executable = manifest.executable;
+
 			if (cb !== undefined) {
 				var changed = true;
 				var hash = crypton.createHash('sha256');
